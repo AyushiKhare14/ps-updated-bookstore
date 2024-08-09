@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>C#BookStoreBackEndAPI</name>
+    </assembly>
+    <members>
+        <member name="M:C_BookStoreBackEndAPI.Controllers.GenreController.GetAll">
+            <summary>
+            Get all the genres in BookStore DB
+            </summary>
+            <returns>List of all the Genres.</returns>
+        </member>
+        <member name="T:C_BookStoreBackEndAPI.Migrations.BookStoreV1">
+            <inheritdoc />
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Migrations.BookStoreV1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Migrations.BookStoreV1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Migrations.BookStoreV1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:C_BookStoreBackEndAPI.Repositories.Interfaces.IGenreRepository">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Repositories.Interfaces.IGenreRepository.GetAll">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Repositories.Interfaces.IGenreRepository.GetById(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Repositories.Interfaces.IGenreRepository.Create(C_BookStoreBackEndAPI.Models.Genre)">
+            <summary>
+            
+            </summary>
+            <param name="genre"></param>
+            <returns></returns>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Repositories.Interfaces.IGenreRepository.Update(System.Int32,C_BookStoreBackEndAPI.Models.Genre)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="genre"></param>
+            <returns></returns>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Repositories.Interfaces.IGenreRepository.Delete(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Services.Interfaces.IGenreService.GetAll">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Services.Interfaces.IGenreService.GetById(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Services.Interfaces.IGenreService.Create(C_BookStoreBackEndAPI.Dtos.Genre.CreateGenreDto)">
+            <summary>
+            
+            </summary>
+            <param name="genreDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Services.Interfaces.IGenreService.Update(System.Int32,C_BookStoreBackEndAPI.Dtos.Genre.UpdateGenreDto)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="genreDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:C_BookStoreBackEndAPI.Services.Interfaces.IGenreService.Delete(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

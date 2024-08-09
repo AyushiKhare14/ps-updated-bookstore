@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "qTrDQBLxJAho9/bytCUwTl2glsmIH7JX6AeHgSc5cAo=",
+  "Source": "C#BookStoreBackEndAPI",
+  "BasePath": "_content/C#BookStoreBackEndAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
