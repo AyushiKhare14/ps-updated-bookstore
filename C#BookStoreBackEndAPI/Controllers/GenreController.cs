@@ -4,54 +4,78 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace C_BookStoreBackEndAPI.Controllers
 {
+    /// <summary>
+    /// Genre Controller
+    /// </summary>
     [Route("api/genre")]
     [ApiController]
     public class GenreController : ControllerBase
     {
         private readonly IGenreService _genreService;
+        
+        /// <summary>
+        /// Genre Controller
+        /// </summary>
+        /// <param name="genreService"></param>
         public GenreController(IGenreService genreService)
         {
             _genreService = genreService;
         }
+        
         /// <summary>
         /// Get all the genres in BookStore DB
         /// </summary>
         /// <returns>List of all the Genres.</returns>
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         { 
-            var genresDto = _genreService.GetAll();
+            var genresDto = await _genreService.GetAllAsync();
 
            return Ok(genresDto);
         }
 
-        [HttpGet("{id:int}")]
-        public IActionResult GetById([FromRoute] int id) 
+        /// <summary>
+        /// Get Genre by genre id.
+        /// </summary>
+        /// <param name="genreId">Genre Id</param>
+        /// <returns>Genre</returns>
+        [HttpGet("{genreId:int}")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute] int genreId) 
         {
-            var genreDto = _genreService.GetById(id);
+            var genreDto = await _genreService.GetByIdAsync(genreId);
             
             return Ok(genreDto);
         }
 
+        /// <summary>
+        /// Create Genre from the request body
+        /// </summary>
+        /// <param name="createGenreDto">Create genre request body</param>
+        /// <returns></returns>
         [HttpPost]
-        public IActionResult Create([FromBody] CreateGenreDto createGenreDto)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateGenreDto createGenreDto)
         {
-            var genreDto = _genreService.Create(createGenreDto);
-            return CreatedAtAction(nameof(GetById), new { id = genreDto.Id }, genreDto);
+            var genreDto = await _genreService.CreateAsync(createGenreDto);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = genreDto.Id }, genreDto);
         }
 
-
-        [HttpPut("{id:int}")]
-        public IActionResult Update([FromRoute] int id, [FromBody] UpdateGenreDto updateGenreDto)
+        /// <summary>
+        /// Update genre from the object in the request body 
+        /// </summary>
+        /// <param name="genreId">Genre Id</param>
+        /// <param name="updateGenreDto">Update genre request body</param>
+        /// <returns></returns>
+        [HttpPut("{genreId:int}")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] int genreId, [FromBody] UpdateGenreDto updateGenreDto)
         {
-            var genre = _genreService.GetById(id);
+            var genre = await _genreService.GetByIdAsync(genreId);
 
             if (genre == null)
             {
                 return NotFound();
             }
-            var genreId = _genreService.Update(id, updateGenreDto);
-            if (genreId == 0)
+            var genreUpdateStatus = await _genreService.UpdateAsync(genreId, updateGenreDto);
+            if (genreUpdateStatus == 0)
             { 
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
@@ -59,21 +83,24 @@ namespace C_BookStoreBackEndAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
-
-        public IActionResult Delete([FromRoute] int id) 
+        /// <summary>
+        /// Delete Genre for given genre id.
+        /// </summary>
+        /// <param name="genreId"></param>
+        /// <returns></returns>
+        [HttpDelete("{genreId:int}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute] int genreId) 
         {
-            var genre = _genreService.GetById(id);
+            var genre = await _genreService.GetByIdAsync(genreId);
 
             if (genre == null)
             {
                 return NotFound();
             }
 
-            var isGenreDeleteSuccess = _genreService.Delete(id);
+            var isGenreDeleteSuccess = await _genreService.DeleteAsync(genreId);
 
             return !isGenreDeleteSuccess ? new StatusCodeResult(StatusCodes.Status500InternalServerError) : NoContent();
         }
     }
-
 }
