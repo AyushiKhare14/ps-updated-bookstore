@@ -66,7 +66,7 @@ namespace C_BookStoreBackEndAPI.test.Services
         }
 
         [Fact]
-        public void Create_Genre_ShouldReturn_GenreDto()
+        public async Task Create_Genre_ShouldReturn_GenreDto()
         {
             // Arrange
             var createGenreDto = new CreateGenreDto { GenreName = "Fiction" };
@@ -74,11 +74,11 @@ namespace C_BookStoreBackEndAPI.test.Services
             var genreDto = new GenreDto { Id = 1, GenreName = "Fiction" };
 
             _mapperMock.Setup(m => m.Map<Genre>(It.IsAny<CreateGenreDto>())).Returns(genre);
-            _genreRepositoryMock.Setup(r => r.Create(It.IsAny<Genre>())).Returns(1);
+            _genreRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<Genre>())).Returns(Task.FromResult(1));
             _mapperMock.Setup(m => m.Map<GenreDto>(It.IsAny<Genre>())).Returns(genreDto);
 
             // Act
-            var result = _genreService.Create(createGenreDto);
+            var result = await _genreService.CreateAsync(createGenreDto);
 
             // Assert
             Assert.Equal(1, result.Id);
@@ -86,33 +86,33 @@ namespace C_BookStoreBackEndAPI.test.Services
         }
 
         [Fact]
-        public void Delete_Genre_ShouldReturn_True_WhenSuccessful()
+        public async Task Delete_Genre_ShouldReturn_True_WhenSuccessful()
         {
             // Arrange
-            _genreRepositoryMock.Setup(r => r.Delete(It.IsAny<int>())).Returns(true);
+            _genreRepositoryMock.Setup(r => r.DeleteAsync(It.IsAny<int>())).Returns(Task.FromResult(true));
 
             // Act
-            var result = _genreService.Delete(1);
+            var result = await _genreService.DeleteAsync(1);
 
             // Assert
             Assert.True(result);
         }
 
         [Fact]
-        public void Delete_Genre_ShouldReturn_False_WhenUnsuccessful()
+        public async Task Delete_Genre_ShouldReturn_False_WhenUnsuccessful()
         {
             // Arrange
-            _genreRepositoryMock.Setup(r => r.Delete(It.IsAny<int>())).Returns(false);
+            _genreRepositoryMock.Setup(r => r.DeleteAsync(It.IsAny<int>())).Returns(Task.FromResult(false));
 
             // Act
-            var result = _genreService.Delete(999);
+            var result = await _genreService.DeleteAsync(999);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void GetAll_Genres_ShouldReturn_ListOfGenreDtos()
+        public async Task GetAll_Genres_ShouldReturn_ListOfGenreDtos()
         {
             // Arrange
             var genres = new List<Genre>
@@ -126,28 +126,28 @@ namespace C_BookStoreBackEndAPI.test.Services
                 new GenreDto { GenreName = "Non-Fiction", Id = 2 }
             };
 
-            _genreRepositoryMock.Setup(r => r.GetAll()).Returns(genres);
+            _genreRepositoryMock.Setup(r => r.GetAllAsync()).Returns(Task.FromResult(genres));
             _mapperMock.Setup(m => m.Map<IEnumerable<GenreDto>>(It.IsAny<IEnumerable<Genre>>())).Returns(genreDtos);
 
             // Act
-            var result = _genreService.GetAll();
+            var result = await _genreService.GetAllAsync();
 
             // Assert
             Assert.Equal(2, result.Count());
         }
 
         [Fact]
-        public void GetById_Genre_ShouldReturn_GenreDto()
+        public async Task GetById_Genre_ShouldReturn_GenreDto()
         {
             // Arrange
             var genre = new Genre { GenreName = "Fiction", Id = 1 };
             var genreDto = new GenreDto { GenreName = "Fiction", Id = 1 };
 
-            _genreRepositoryMock.Setup(r => r.GetById(It.IsAny<int>())).Returns(genre);
+            _genreRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult(genre));
             _mapperMock.Setup(m => m.Map<GenreDto>(It.IsAny<Genre>())).Returns(genreDto);
 
             // Act
-            var result = _genreService.GetById(1);
+            var result = await _genreService.GetByIdAsync(1);
 
             // Assert
             Assert.NotNull(result);
@@ -155,44 +155,44 @@ namespace C_BookStoreBackEndAPI.test.Services
         }
 
         [Fact]
-        public void GetById_Genre_ShouldReturn_Null_IfNotFound()
+        public async Task GetById_Genre_ShouldReturn_Null_IfNotFound()
         {
             // Arrange
-            _genreRepositoryMock.Setup(r => r.GetById(It.IsAny<int>())).Returns((Genre)null);
+            _genreRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult((Genre)null));
 
             // Act
-            var result = _genreService.GetById(999);
+            var result = await _genreService.GetByIdAsync(999);
 
             // Assert
             Assert.Null(result);
         }
 
         [Fact]
-        public void Update_Genre_ShouldReturn_GenreId()
+        public async Task Update_Genre_ShouldReturn_GenreId()
         {
             // Arrange
             var genre = new Genre { GenreName = "Fiction", Id = 1 };
             var updateGenreDto = new UpdateGenreDto { GenreName = "Updated Fiction" };
 
-            _genreRepositoryMock.Setup(r => r.GetById(It.IsAny<int>())).Returns(genre);
+            _genreRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult(genre));
             _mapperMock.Setup(m => m.Map(updateGenreDto, genre)).Returns(genre);
-            _genreRepositoryMock.Setup(r => r.Update(It.IsAny<int>(), It.IsAny<Genre>())).Returns(1);
+            _genreRepositoryMock.Setup(r => r.UpdateAsync(It.IsAny<int>(), It.IsAny<Genre>())).Returns(Task.FromResult(1));
 
             // Act
-            var result = _genreService.Update(1, updateGenreDto);
+            var result = await _genreService.UpdateAsync(1, updateGenreDto);
 
             // Assert
             Assert.Equal(1, result);
         }
 
         [Fact]
-        public void Update_Genre_ShouldReturn_Zero_IfNotFound()
+        public async Task Update_Genre_ShouldReturn_Zero_IfNotFound()
         {
             // Arrange
-            _genreRepositoryMock.Setup(r => r.GetById(It.IsAny<int>())).Returns((Genre)null);
+            _genreRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult((Genre)null));
 
             // Act
-            var result = _genreService.Update(999, new UpdateGenreDto { GenreName = "Non-existent Genre" });
+            var result = await _genreService.UpdateAsync(999, new UpdateGenreDto { GenreName = "Non-existent Genre" });
 
             // Assert
             Assert.Equal(0, result);

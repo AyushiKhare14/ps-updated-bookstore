@@ -192,7 +192,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
         }
 
         [Fact]
-        public void Create_Genre_ShouldReturn_GenreId()
+        public async Task Create_Genre_ShouldReturn_GenreId()
         {
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -203,7 +203,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
                 var genre = new Genre { GenreName = "Fiction" };
 
                 // Act
-                var result = genreRepository.Create(genre);
+                var result = await genreRepository.CreateAsync(genre);
 
                 // Assert
                 Assert.Equal(genre.Id, result);
@@ -211,7 +211,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
         }
 
         [Fact]
-        public void Delete_Genre_ShouldReturn_True_WhenSuccessful()
+        public async Task Delete_Genre_ShouldReturn_True_WhenSuccessful()
         {
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -224,7 +224,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
                 dbContext.SaveChanges();
 
                 // Act
-                var result = genreRepository.Delete(genre.Id);
+                var result = await genreRepository.DeleteAsync(genre.Id);
 
                 // Assert
                 Assert.True(result);
@@ -259,7 +259,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
         //    // Assert
         //    Assert.False(result);
         //}
-        public void Delete_Genre_ShouldReturn_False_WhenUnsuccessful()
+        public async Task Delete_Genre_ShouldReturn_False_WhenUnsuccessful()
         {
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -269,7 +269,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
                 var genreRepository = new GenreRepository(dbContext);
 
                 // Act
-                var result = genreRepository.Delete(999); // Non-existent ID
+                var result = await genreRepository.DeleteAsync(999); // Non-existent ID
 
                 // Assert
                 Assert.False(result);
@@ -277,7 +277,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
         }
 
         [Fact]
-        public void GetAll_Genres_ShouldReturn_ListOfGenres()
+        public async Task GetAll_Genres_ShouldReturn_ListOfGenres()
         {
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -292,7 +292,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
                 dbContext.SaveChanges();
 
                 // Act
-                var result = genreRepository.GetAll();
+                var result = await genreRepository.GetAllAsync();
 
                 // Assert
                 Assert.Equal(2, result.Count);
@@ -300,7 +300,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
         }
 
         [Fact]
-        public void GetById_Genre_ShouldReturn_Genre()
+        public async Task GetById_Genre_ShouldReturn_Genre()
         {
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -313,7 +313,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
                 dbContext.SaveChanges();
 
                 // Act
-                var result = genreRepository.GetById(genre.Id);
+                var result = await genreRepository.GetByIdAsync(genre.Id);
 
                 // Assert
                 Assert.NotNull(result);
@@ -322,7 +322,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
         }
 
         [Fact]
-        public void GetById_Genre_ShouldReturn_Null_IfNotFound()
+        public async Task GetById_Genre_ShouldReturn_Null_IfNotFound()
         {
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -332,7 +332,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
                 var genreRepository = new GenreRepository(dbContext);
 
                 // Act
-                var result = genreRepository.GetById(999); // Non-existent ID
+                var result = await genreRepository.GetByIdAsync(999); // Non-existent ID
 
                 // Assert
                 Assert.Null(result);
@@ -340,7 +340,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
         }
 
         [Fact]
-        public void Update_Genre_ShouldReturn_SuccessfulStatus()
+        public async Task Update_Genre_ShouldReturn_SuccessfulStatus()
         {
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -355,7 +355,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
                 genre.GenreName = "Updated Fiction";
 
                 // Act
-                var result = genreRepository.Update(genre.Id, genre);
+                var result = await genreRepository.UpdateAsync(genre.Id, genre);
 
                 // Assert
                 Assert.NotEqual(0, result);
@@ -363,7 +363,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
         }
 
         [Fact]
-        public void Update_Genre_ShouldReturn_Zero_IfNotFound()
+        public async Task Update_Genre_ShouldReturn_Zero_IfNotFound()
         {
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -373,7 +373,7 @@ namespace C_BookStoreBackEndAPI.test.Repositories
                 var genreRepository = new GenreRepository(dbContext);
 
                 // Act
-                var result = genreRepository.Update(999, new Genre { GenreName = "Non-existent Genre" }); // Non-existent ID
+                var result = await genreRepository.UpdateAsync(999, new Genre { GenreName = "Non-existent Genre" }); // Non-existent ID
 
                 // Assert
                 Assert.Equal(0, result);
