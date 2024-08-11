@@ -53,7 +53,7 @@ namespace C_BookStoreBackEndAPI.Services
         /// <inheritdoc/>
         public async Task<GenreDto?> GetByIdAsync(int id)
         {
-            var genre = _genreRepository.GetByIdAsync(id);
+            var genre = await _genreRepository.GetByIdAsync(id);
             var genreDto = _mapper.Map<GenreDto>(genre);
             return genreDto;
         }

@@ -6,6 +6,7 @@ using C_BookStoreBackEndAPI.Services;
 using C_BookStoreBackEndAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Reflection;
 
 namespace C_BookStoreBackEndAPI
 {
@@ -34,7 +35,13 @@ namespace C_BookStoreBackEndAPI
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen( setupAction =>
+            {
+                var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+
+                setupAction.IncludeXmlComments(xmlCommentsFullPath);
+            });
             builder.Services.AddDbContext<BookStoreDBContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreConnection"));
@@ -51,6 +58,8 @@ namespace C_BookStoreBackEndAPI
 
             builder.Services.AddScoped<IGenreRepository, GenreRepository>();
             builder.Services.AddScoped<IGenreService, GenreService>();
+            builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+            builder.Services.AddScoped<IAuthorService, AuthorService>();
 
             var app = builder.Build();
 

@@ -56,7 +56,7 @@ namespace C_BookStoreBackEndAPI.Controllers
         public async Task<IActionResult> CreateAsync([FromBody] CreateGenreDto createGenreDto)
         {
             var genreDto = await _genreService.CreateAsync(createGenreDto);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = genreDto.Id }, genreDto);
+            return CreatedAtAction(nameof(GetByIdAsync), new { genreId = genreDto.Id }, genreDto);
         }
 
         /// <summary>

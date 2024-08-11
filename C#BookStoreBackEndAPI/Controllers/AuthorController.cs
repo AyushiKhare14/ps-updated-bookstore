@@ -1,73 +1,91 @@
 ﻿using AutoMapper;
-using C_BookStoreBackEndAPI.Data;
+
 using C_BookStoreBackEndAPI.Dtos.Author;
-using C_BookStoreBackEndAPI.Dtos.Genre;
-using C_BookStoreBackEndAPI.Models;
+
+using C_BookStoreBackEndAPI.Services.Interfaces;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace C_BookStoreBackEndAPI.Controllers
 {
+    /// <summary>
+    /// Author Controller
+    /// </summary>
     [ApiController]
     [Route("api/author")]
     public class AuthorController : ControllerBase
     {
-        private readonly BookStoreDBContext _context;
-        private readonly IMapper _mapper;
-        public AuthorController(BookStoreDBContext context, IMapper mapper)
+        private readonly IAuthorService _authorService;
+        
+        /// <summary>
+        /// Author Controller
+        /// </summary>
+        /// <param name="authorService"></param>
+        
+        public AuthorController(IAuthorService authorService)
         {
-            _context = context;
-            _mapper = mapper;
+            _authorService = authorService;
         }
 
+
+        /// <summary>
+        /// Get all the authors in Bookstore DB
+        /// </summary>
+        /// <returns>List of all authors</returns>
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var authors = _context.Authors.ToList();
+            var authorDto = await _authorService.GetAllAsync();
 
-            return Ok(_mapper.Map<IEnumerable<AuthorDto>>(authors));
+            return Ok(authorDto);
         }
 
-        [HttpGet("{id:int}")]
-        public IActionResult GetById([FromRoute] int id)
+        /// <summary>
+        /// Get Author by author id
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns>Author</returns>
+        [HttpGet("{authorId:int}")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute] int authorId)
         {
-            var author = _context.Authors.Find(id);
+            var authorDto = await _authorService.GetByIdAsync(authorId);
 
-            if (author == null)
-            {
-                return NotFound();
-            }
-            return Ok(_mapper.Map<AuthorDto>(author));
+            return Ok(authorDto);
         }
 
+        /// <summary>
+        /// Create Author from the request body
+        /// </summary>
+        /// <param name="createAuthorDto">Create author request body</param>
+        /// <returns></returns>
         [HttpPost]
-        public IActionResult Create([FromBody] CreateAuthorDto createAuthorDto)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateAuthorDto createAuthorDto)
         {
-            var author = _mapper.Map<Author>(createAuthorDto);
-            _context.Authors.Add(author);
-            _context.SaveChanges();
-
-            var authorDto = _mapper.Map<AuthorDto>(author);
-
-            return CreatedAtAction(nameof(GetById), new { id = author.Id }, authorDto);
-
+            var authorDto = await _authorService.CreateAsync(createAuthorDto);
+            return CreatedAtAction(nameof(GetByIdAsync), new { authorId = authorDto.Id }, authorDto);
         }
 
-
-        [HttpPut("{id:int}")]
-        public IActionResult Update([FromRoute] int id, [FromBody] UpdateAuthorDto updateAuthorDto)
+        /// <summary>
+        /// Update author from the object in the request body
+        /// </summary>
+        /// <param name="authorId">Author Id</param>
+        /// <param name="updateAuthorDto">Update author request body</param>
+        /// <returns></returns>
+        [HttpPut("{authorId:int}")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] int authorId, [FromBody] UpdateAuthorDto updateAuthorDto)
         {
-            var author = _context.Authors.Find(id);
+            var author = await _authorService.GetByIdAsync(authorId);
 
             if (author == null)
             {
                 return NotFound();
             }
-
-            _mapper.Map(updateAuthorDto, author);
-
-            _context.SaveChanges();
+            var authorUpdateStatus = await _authorService.UpdateAsync(authorId, updateAuthorDto);
+            if (authorUpdateStatus == 0)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
 
             return NoContent();
         }
@@ -77,54 +95,52 @@ namespace C_BookStoreBackEndAPI.Controllers
         //{
 
         //}   
-        [HttpPatch("{id:int}")]
-        public IActionResult PartialUpdate([FromRoute] int id, [FromBody] JsonPatchDocument<UpdateAuthorDto> patchDoc)
-        {
-            if (patchDoc == null)
-            {
-                return BadRequest();
-            }
+        //[HttpPatch("{id:int}")]
+        //public IActionResult PartialUpdate([FromRoute] int id, [FromBody] JsonPatchDocument<UpdateAuthorDto> patchDoc)
+        //{
+        //    if (patchDoc == null)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            var author = _context.Authors.Find(id);
+        //    var author = _context.Authors.Find(id);
+
+        //    if (author == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var authorToPatch = _mapper.Map<UpdateAuthorDto>(author); // Map the existing author to the DTO
+
+        //    patchDoc.ApplyTo(authorToPatch, ModelState); // Apply the patch to the DTO
+
+        //    if (!TryValidateModel(authorToPatch)) // Validate the patched DTO
+        //    {
+        //        return ValidationProblem(ModelState);
+        //    }
+
+        //    _mapper.Map(authorToPatch, author); // Map the patched DTO back to the author entity
+
+        //    _context.SaveChanges(); // Save changes to the database
+
+        //    return NoContent();
+        //}
+
+
+        [HttpDelete("{authorId:int}")]
+
+        public async Task<IActionResult> DeleteAsync([FromRoute] int authorId)
+        {
+            var author = await _authorService.GetByIdAsync(authorId);
 
             if (author == null)
             {
                 return NotFound();
             }
 
-            var authorToPatch = _mapper.Map<UpdateAuthorDto>(author); // Map the existing author to the DTO
+            var isAuthorDeleteSuccess = await _authorService.DeleteAsync(authorId);
 
-            patchDoc.ApplyTo(authorToPatch, ModelState); // Apply the patch to the DTO
-
-            if (!TryValidateModel(authorToPatch)) // Validate the patched DTO
-            {
-                return ValidationProblem(ModelState);
-            }
-
-            _mapper.Map(authorToPatch, author); // Map the patched DTO back to the author entity
-
-            _context.SaveChanges(); // Save changes to the database
-
-            return NoContent();
-        }
-
-
-        [HttpDelete("{id:int}")]
-
-        public IActionResult Delete([FromRoute] int id)
-        {
-            var author = _context.Authors.Find(id);
-
-            if (author == null)
-            {
-                return NotFound();
-            }
-
-            _context.Authors.Remove(author);
-            _context.SaveChanges();
-
-            return NoContent();
-
+            return !isAuthorDeleteSuccess ? new StatusCodeResult(StatusCodes.Status500InternalServerError) : NoContent();
         }
     }
 }
