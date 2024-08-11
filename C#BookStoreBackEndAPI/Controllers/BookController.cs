@@ -2,92 +2,111 @@
 using C_BookStoreBackEndAPI.Data;
 using C_BookStoreBackEndAPI.Dtos.Author;
 using C_BookStoreBackEndAPI.Dtos.Book;
+using C_BookStoreBackEndAPI.Dtos.Genre;
 using C_BookStoreBackEndAPI.Models;
+using C_BookStoreBackEndAPI.Services;
+using C_BookStoreBackEndAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace C_BookStoreBackEndAPI.Controllers
 {
+    /// <summary>
+    /// Book Controller
+    /// </summary>
     [ApiController]
     [Route("api/book")]
     public class BookController : ControllerBase
     {
-        
-        private readonly IMapper _mapper;
-        private readonly BookStoreDBContext _context;
-        public BookController(BookStoreDBContext context, IMapper mapper) 
+        private readonly IBookService _bookService;
+       
+        /// <summary>
+        /// Book Controller
+        /// </summary>
+        /// <param name="bookService"></param>
+        public BookController(IBookService bookService) 
         {
-            _context = context;
-            _mapper = mapper;
+            _bookService = bookService;
         }
 
+        /// <summary>
+        /// Get all the books in BookStore DB
+        /// </summary>
+        /// <returns>List of all the Books.</returns>
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var books = _context.Books.ToList();
+            var bookDto = await _bookService.GetAllAsync();
 
-            return Ok(_mapper.Map<IEnumerable<BookDto>>(books));
-
+            return Ok(bookDto);
         }
 
-        [HttpGet("{id:int}")]
-        public IActionResult GetById([FromRoute] int id)
+        /// <summary>
+        /// Get Book by book id
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns>Book</returns>
+        [HttpGet("{bookId:int}")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute] int bookId)
         {
-            var book = _context.Books.Find(id);
+            var bookDto = await _bookService.GetByIdAsync(bookId);
 
-            if (book == null)
-            {
-                return NotFound();
-            }
-            return Ok(_mapper.Map<BookDto>(book));
+            return Ok(bookDto);
         }
 
+        /// <summary>
+        /// Create Book from the request body
+        /// </summary>
+        /// <param name="createBookDto">Create book request body</param>
+        /// <returns></returns>
         [HttpPost]
-        public IActionResult Create([FromBody] CreateBookDto createBookDto)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateBookDto createBookDto)
         {
-            var book = _mapper.Map<Book>(createBookDto);
-            _context.Books.Add(book);
-            _context.SaveChanges();
-
-            var bookDto = _mapper.Map<BookDto>(book);
-
-            return CreatedAtAction(nameof(GetById), new { id = book.Id }, bookDto);
-
+            var bookDto = await _bookService.CreateAsync(createBookDto);
+            return CreatedAtAction(nameof(GetByIdAsync), new { bookId = bookDto.Id }, bookDto);
         }
 
-
-        [HttpPut("{id:int}")]
-        public IActionResult Update([FromRoute] int id, [FromBody] UpdateBookDto updateBookDto)
+        /// <summary>
+        /// Update book from the object in the request body 
+        /// </summary>
+        /// <param name="bookId">Book Id</param>
+        /// <param name="updateBookDto">Update book request body</param>
+        /// <returns></returns>
+        [HttpPut("{bookId:int}")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] int bookId, [FromBody] UpdateBookDto updateBookDto)
         {
-            var book = _context.Books.Find(id);
+            var book = await _bookService.GetByIdAsync(bookId);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+            var bookUpdateStatus = await _bookService.UpdateAsync(bookId, updateBookDto);
+            if (bookUpdateStatus == 0)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Delete Book for given genre id.
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        [HttpDelete("{bookId:int}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute] int bookId)
+        {
+            var book = await _bookService.GetByIdAsync(bookId);
 
             if (book == null)
             {
                 return NotFound();
             }
 
-            _mapper.Map(updateBookDto, book);
+            var isBookDeleteSuccess = await _bookService.DeleteAsync(bookId);
 
-            _context.SaveChanges();
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id:int}")]
-
-        public IActionResult Delete([FromRoute] int id)
-        {
-            var book = _context.Books.Find(id);
-
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            _context.Books.Remove(book);
-            _context.SaveChanges();
-
-            return NoContent();
-
+            return !isBookDeleteSuccess ? new StatusCodeResult(StatusCodes.Status500InternalServerError) : NoContent();
         }
     }
 }
