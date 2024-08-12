@@ -18,7 +18,7 @@ namespace C_BookStoreBackEndAPI.Repositories
         /// <param name="context">Db Context object passed using DI</param>
         public BookRepository(BookStoreDBContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context)); 
         }
 
         /// <inheritdoc/>

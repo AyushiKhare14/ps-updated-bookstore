@@ -1,6 +1,7 @@
 ﻿using C_BookStoreBackEndAPI.Dtos.Genre;
 using C_BookStoreBackEndAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace C_BookStoreBackEndAPI.Controllers
 {
@@ -12,14 +13,16 @@ namespace C_BookStoreBackEndAPI.Controllers
     public class GenreController : ControllerBase
     {
         private readonly IGenreService _genreService;
+        private readonly ILogger _logger;
         
         /// <summary>
         /// Genre Controller
         /// </summary>
         /// <param name="genreService"></param>
-        public GenreController(IGenreService genreService)
+        public GenreController(IGenreService genreService, ILogger<GenreController> logger)
         {
             _genreService = genreService;
+            _logger = logger;
         }
         
         /// <summary>
@@ -29,9 +32,17 @@ namespace C_BookStoreBackEndAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         { 
-            var genresDto = await _genreService.GetAllAsync();
+            try
+            {
+                var genresDto = await _genreService.GetAllAsync();
+                return Ok(genresDto);
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError("Getting all cities encountered exception", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
 
-           return Ok(genresDto);
         }
 
         /// <summary>
@@ -42,10 +53,26 @@ namespace C_BookStoreBackEndAPI.Controllers
         [HttpGet("{genreId:int}")]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int genreId) 
         {
-            var genreDto = await _genreService.GetByIdAsync(genreId);
-            
-            return Ok(genreDto);
+            try
+            {
+                var genreDto = await _genreService.GetByIdAsync(genreId);
+
+                if (genreDto == null)
+                {
+
+                    return NotFound();
+                }
+
+                return Ok(genreDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Getting city encountered exception", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
+
+        
 
         /// <summary>
         /// Create Genre from the request body
@@ -55,8 +82,16 @@ namespace C_BookStoreBackEndAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CreateGenreDto createGenreDto)
         {
-            var genreDto = await _genreService.CreateAsync(createGenreDto);
-            return CreatedAtAction(nameof(GetByIdAsync), new { genreId = genreDto.Id }, genreDto);
+            try
+            {
+                var genreDto = await _genreService.CreateAsync(createGenreDto);
+                return Ok(genreDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Created new city encountered exception", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         /// <summary>
@@ -68,19 +103,27 @@ namespace C_BookStoreBackEndAPI.Controllers
         [HttpPut("{genreId:int}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] int genreId, [FromBody] UpdateGenreDto updateGenreDto)
         {
-            var genre = await _genreService.GetByIdAsync(genreId);
-
-            if (genre == null)
+            try
             {
-                return NotFound();
+                var genre = await _genreService.GetByIdAsync(genreId);
+
+                if (genre == null)
+                {
+                    return NotFound();
+                }
+                var genreUpdateStatus = await _genreService.UpdateAsync(genreId, updateGenreDto);
+                if (genreUpdateStatus == 0)
+                {
+                    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                }
+
+                return NoContent();
             }
-            var genreUpdateStatus = await _genreService.UpdateAsync(genreId, updateGenreDto);
-            if (genreUpdateStatus == 0)
-            { 
+            catch (Exception ex)
+            {
+                _logger.LogError("Created new city encountered exception", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
-
-            return NoContent();
         }
 
         /// <summary>
@@ -91,16 +134,25 @@ namespace C_BookStoreBackEndAPI.Controllers
         [HttpDelete("{genreId:int}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] int genreId) 
         {
-            var genre = await _genreService.GetByIdAsync(genreId);
-
-            if (genre == null)
+            try
             {
-                return NotFound();
+                var genre = await _genreService.GetByIdAsync(genreId);
+
+                if (genre == null)
+                {
+                    return NotFound();
+                }
+
+                var isGenreDeleteSuccess = await _genreService.DeleteAsync(genreId);
+
+                return !isGenreDeleteSuccess ? new StatusCodeResult(StatusCodes.Status500InternalServerError) : NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Created new city encountered exception", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            var isGenreDeleteSuccess = await _genreService.DeleteAsync(genreId);
-
-            return !isGenreDeleteSuccess ? new StatusCodeResult(StatusCodes.Status500InternalServerError) : NoContent();
         }
     }
 }

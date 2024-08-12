@@ -53,7 +53,7 @@ namespace C_BookStoreBackEndAPI.Controllers
             return Ok(bookDto);
         }
 
-        /// <summary>
+        /// <summary>   
         /// Create Book from the request body
         /// </summary>
         /// <param name="createBookDto">Create book request body</param>
@@ -62,7 +62,9 @@ namespace C_BookStoreBackEndAPI.Controllers
         public async Task<IActionResult> CreateAsync([FromBody] CreateBookDto createBookDto)
         {
             var bookDto = await _bookService.CreateAsync(createBookDto);
-            return CreatedAtAction(nameof(GetByIdAsync), new { bookId = bookDto.Id }, bookDto);
+            return Ok(bookDto.Id);
+            //return CreatedAtAction(nameof(GetByIdAsync), new { bookId = bookDto.Id }, bookDto);
+            //return CreatedAtAction(nameof(GetById), new { id = genreDto.Id }, genreDto);
         }
 
         /// <summary>

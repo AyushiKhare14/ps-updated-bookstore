@@ -11,8 +11,8 @@ namespace C_BookStoreBackEndAPI.Data
             
         }
 
-        public DbSet<Genre> Genres {  get; set; }
-        public DbSet<Author> Authors { get; set; }
-        public DbSet<Book> Books { get; set; }
+        public virtual DbSet<Genre> Genres {  get; set; }
+        public virtual DbSet<Author> Authors { get; set; }
+        public virtual DbSet<Book> Books { get; set; }
     }
 }
