@@ -27,7 +27,6 @@ namespace C_BookStoreBackEndAPI.Repositories
             _context.Genres.Add(genre);
             var createStatus = await _context.SaveChangesAsync();
             return genre.Id;
-
         }
 
         /// <inheritdoc/>

@@ -7,9 +7,7 @@ namespace C_BookStoreBackEndAPI.Data
     {
         public BookStoreDBContext(DbContextOptions dbContextOptions)
             : base(dbContextOptions)
-        {
-            
-        }
+        {  }
 
         public virtual DbSet<Genre> Genres {  get; set; }
         public virtual DbSet<Author> Authors { get; set; }
