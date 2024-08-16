@@ -31,15 +31,18 @@ namespace C_BookStoreBackEndAPI.Controllers
         /// <returns>List of all the Genres.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
-        { 
+        {
             try
             {
                 var genresDto = await _genreService.GetAllAsync();
                 return Ok(genresDto);
             }
-            catch (Exception ex) 
-            {
-                _logger.LogError("Getting all cities encountered exception", ex);
+            catch (Exception ex)
+            {   
+                
+                _logger.LogError(ex, "An error occurred while getting all genres.");
+                _logger.LogTrace("Exception details: {Exception}", ex);
+
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
@@ -67,12 +70,37 @@ namespace C_BookStoreBackEndAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Getting city encountered exception", ex);
+                _logger.LogError(ex, "Getting city encountered exception");
+                _logger.LogTrace("Exception details: {Exception}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
 
-        
+
+        [HttpGet("{genreId:int}/books")]
+        public async Task<IActionResult> GetByIdWithBooksAsync([FromRoute] int genreId)
+        {
+            try
+            {
+                var genreDto = await _genreService.GetByIdWithBooksAsync(genreId);
+
+                if (genreDto == null)
+                {
+
+                    return NotFound();
+                }
+
+                return Ok(genreDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Getting city encountered exception");
+                _logger.LogTrace("Exception details: {Exception}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+
 
         /// <summary>
         /// Create Genre from the request body
@@ -87,9 +115,14 @@ namespace C_BookStoreBackEndAPI.Controllers
                 var genreDto = await _genreService.CreateAsync(createGenreDto);
                 return Ok(genreDto);
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
             catch (Exception ex)
             {
-                _logger.LogError("Created new city encountered exception", ex);
+                _logger.LogError(ex ,"Created new city encountered exception");
+                _logger.LogTrace("Exception details: {Exception}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -121,7 +154,8 @@ namespace C_BookStoreBackEndAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Created new city encountered exception", ex);
+                _logger.LogError(ex, "Created new city encountered exception");
+                _logger.LogTrace("Exception details: {Exception}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -145,11 +179,12 @@ namespace C_BookStoreBackEndAPI.Controllers
 
                 var isGenreDeleteSuccess = await _genreService.DeleteAsync(genreId);
 
-                return !isGenreDeleteSuccess ? new StatusCodeResult(StatusCodes.Status500InternalServerError) : NoContent();
+                return !isGenreDeleteSuccess ? BadRequest("Genre cannot be deleted as it is associated with one or more books.") : NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError("Created new city encountered exception", ex);
+                _logger.LogError(ex, "Created new city encountered exception");
+                _logger.LogTrace("Exception details: {Exception}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 

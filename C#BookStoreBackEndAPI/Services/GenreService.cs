@@ -3,6 +3,7 @@ using C_BookStoreBackEndAPI.Dtos.Genre;
 using C_BookStoreBackEndAPI.Models;
 using C_BookStoreBackEndAPI.Repositories.Interfaces;
 using C_BookStoreBackEndAPI.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace C_BookStoreBackEndAPI.Services
 {
@@ -28,43 +29,105 @@ namespace C_BookStoreBackEndAPI.Services
         /// <inheritdoc/>
         public async Task<GenreDto> CreateAsync(CreateGenreDto createGenreDto)
         {
-            var genre = _mapper.Map<Genre>(createGenreDto);
-            var genreId = await _genreRepository.CreateAsync(genre);
-            genre.Id = genreId;
-            var genreDto = _mapper.Map<GenreDto>(genre);
-            return genreDto;
+            try
+            {
+                var genre = _mapper.Map<Genre>(createGenreDto);
+                var genreId = await _genreRepository.CreateAsync(genre);
+                genre.Id = genreId;
+                var genreDto = _mapper.Map<GenreDto>(genre);
+                return genreDto;
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
 
         /// <inheritdoc/>
         public async Task<bool> DeleteAsync(int id)
         {
-            var isGenreDeleteSuccess = await _genreRepository.DeleteAsync(id);
-            return isGenreDeleteSuccess;
+            try
+            {
+                var isGenreDeleteSuccess = await _genreRepository.DeleteAsync(id);
+                if (!isGenreDeleteSuccess)
+                {
+                    return false;
+                }
+                return isGenreDeleteSuccess;
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
 
         /// <inheritdoc/>
         public async Task<List<GenreDto>> GetAllAsync()
         {
-            var genres = await _genreRepository.GetAllAsync();
-            var genreDtoList = _mapper.Map<List<GenreDto>>(genres);
-            return genreDtoList;
+            try
+            {
+                var genres = await _genreRepository.GetAllAsync();
+                var genreDtoList = _mapper.Map<List<GenreDto>>(genres);
+                return genreDtoList;
+            }
+            catch (Exception) 
+            {
+                throw;
+            }
         }
 
         /// <inheritdoc/>
         public async Task<GenreDto?> GetByIdAsync(int id)
         {
-            var genre = await _genreRepository.GetByIdAsync(id);
-            var genreDto = _mapper.Map<GenreDto>(genre);
-            return genreDto;
+            try
+            {
+                var genre = await _genreRepository.GetByIdAsync(id);
+                var genreDto = _mapper.Map<GenreDto>(genre);
+                return genreDto;
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        public async Task<GenreWithBooksDto?> GetByIdWithBooksAsync(int id)
+        {
+            try
+            {
+                var genre = await _genreRepository.GetByIdWithBooksAsync(id);
+                if (genre == null) return null;
+                var genreDto = _mapper.Map<GenreWithBooksDto>(genre);
+                return genreDto;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <inheritdoc/>
         public async Task<int> UpdateAsync(int id, UpdateGenreDto genreDto)
         {
-            var genre = await _genreRepository.GetByIdAsync(id);
-            var updatedGenre = _mapper.Map(genreDto, genre);
-            var genreId = await _genreRepository.UpdateAsync(id, updatedGenre);
-            return genreId;
+            try
+            {
+                var genre = await _genreRepository.GetByIdAsync(id);
+                var updatedGenre = _mapper.Map(genreDto, genre);
+                var genreId = await _genreRepository.UpdateAsync(id, updatedGenre);
+                return genreId;
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+
         }
     }
 }

@@ -21,6 +21,13 @@ namespace C_BookStoreBackEndAPI.Repositories.Interfaces
         Task<Genre?> GetByIdAsync(int genreId);
 
         /// <summary>
+        /// Retrieves Books with genre
+        /// </summary>
+        /// <param name="genreId"></param>
+        /// <returns></returns>
+        Task<Genre?> GetByIdWithBooksAsync(int genreId);
+
+        /// <summary>
         /// Creates a new genre
         /// </summary>
         /// <param name="genre">Genre to be created</param>

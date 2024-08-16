@@ -126,7 +126,11 @@ namespace C_BookStoreBackEndAPI.Controllers
         //    return NoContent();
         //}
 
-
+        /// <summary>
+        /// Deletes author for the given ID
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns></returns>
         [HttpDelete("{authorId:int}")]
 
         public async Task<IActionResult> DeleteAsync([FromRoute] int authorId)

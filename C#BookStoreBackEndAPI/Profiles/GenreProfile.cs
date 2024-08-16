@@ -15,6 +15,7 @@ namespace C_BookStoreBackEndAPI.Profiles
         public GenreProfile()
         {
             CreateMap<Genre, GenreDto>();
+            CreateMap<Genre, GenreWithBooksDto>();
             CreateMap<CreateGenreDto, Genre>();
             CreateMap<UpdateGenreDto, Genre>();
         }

@@ -1,44 +1,4 @@
-﻿//using AutoMapper;
-//using C_BookStoreBackEndAPI.Models;
-//using C_BookStoreBackEndAPI.Repositories;
-//using C_BookStoreBackEndAPI.Repositories.Interfaces;
-//using C_BookStoreBackEndAPI.Services;
-//using Moq;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-
-//namespace C_BookStoreBackEndAPI.test.Services
-//{
-//    public class GenreServiceTests
-//    {
-//        private Mock<IGenreRepository> _genreRepositoryMock;
-//        //private readonly GenreRepository _genreRepository;
-//        private readonly GenreService _genreService;
-//        public GenreServiceTests()
-//        {
-//            _genreRepositoryMock = new Mock<IGenreRepository>();
-//            _genreService = new GenreService(_genreRepositoryMock.Object, new Mock<IMapper>().Object);
-//        }
-
-//        [Fact]
-//        public void GetAll_ShouldReturn_AllGenres()
-//        {
-//            List<Genre> genres = new List<Genre>() 
-//            {
-//                new Genre() { Id = 1, GenreName = "Fiction" },
-//                new Genre() { Id = 2, GenreName = "Comedy" }
-//            };
-//            _genreRepositoryMock.Setup(s => s.GetAll()).Returns(genres);
-
-//            var result = _genreService.GetAll();
-
-//            Assert.Equal(genres.Count, result.ToList().Count);
-//        }
-//    }
-//}
+﻿
 
 
 using Xunit;
